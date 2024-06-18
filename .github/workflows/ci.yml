@@ -18,8 +18,8 @@ jobs:
             make
           else
             cmake -B build -S .
-            cmake --build build
-            cmake --install build --prefix .
+            cmake --build build --config Release
+            cmake --install build --prefix . --config Release
           fi
       - name: Test
         run: echo 5 | ./dice
