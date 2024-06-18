@@ -1,0 +1,62 @@
+name: CI
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest, macos-12]
+        method: [make, cmake]
+    name: Build on ${{ matrix.os }} using ${{ matrix.method }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Compile
+        shell: bash
+        run: |
+          if [ ${{ matrix.method }} == "make" ]; then
+            make
+          else
+            cmake -B build -S .
+            cmake --build build
+            cmake --install build --prefix .
+          fi
+      - name: Test
+        run: echo 5 | ./dice
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: dice-${{ matrix.os }}-${{ matrix.method }}
+          path: dice*
+          compression-level: 9
+  deploy:
+    needs: [build]
+    concurrency:
+        group: "pages"
+        cancel-in-progress: false
+    permissions:
+        contents: read
+        pages: write
+        id-token: write
+    environment:
+        name: github-pages
+        url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get doxygen & graphviz
+        run: |
+            choco install doxygen.portable graphviz --yes -r --no-progress
+      - name: Run doxygen
+        run: |
+            doxygen Doxyfile
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+            path: 'html/'
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

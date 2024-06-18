@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.17)
+project(dice)
+enable_language(C)
+set(CMAKE_C_EXTENSIONS OFF)
+add_executable(dice src/dice.c src/main.c)
+target_include_directories(dice PRIVATE include)
+install(TARGETS dice DESTINATION .)
