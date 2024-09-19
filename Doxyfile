@@ -19,5 +19,6 @@ JAVADOC_AUTOBRIEF      = YES
 TIMESTAMP              = YES
 STRIP_CODE_COMMENTS    = NO
 PROJECT_BRIEF          = Rolling dice.
+SITEMAP_URL            = https://eric15342335.github.io/c-repo-template/
 HIDE_UNDOC_RELATIONS   = NO
 SHOW_GROUPED_MEMB_INC  = YES
